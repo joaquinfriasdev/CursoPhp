@@ -1,3 +1,17 @@
+<?php
+session_start();
+if ($_POST) {
+    if (($_POST['usuario'] == "admin") && ($_POST['contrasenia'] == "1234")) {
+        $_SESSION['usuario'] = "admin";
+        header("Location:index.php"); //La función header nos envía a la dirección index.php
+    } else{
+        echo "<script> alert('Usuario o contraseña incorrecta')</script>";
+    }
+}
+
+?>
+
+
 <!doctype html>
 <html lang="en">
 
@@ -20,7 +34,7 @@
             </div>
             <div class="col-md-4">
                 <br>
-                <div class="card">    
+                <div class="card">
                     <div class="card-header">
                         Iniciar Sesión
                     </div>
@@ -28,13 +42,13 @@
                         <form action="login.php" method="post">
                             Usuario: <input class="form-control" type="text" name="usuario" id="">
                             <br>
-                            Contraseña: <input class="form-control" type="text" name="contrasenia" id="">
+                            Contraseña: <input class="form-control" type="password" name="contrasenia" id="">
                             <br>
                             <button class="btn btn-success" type="submit">Entrar al portafolio</button>
                         </form>
                     </div>
                     <div class="card-footer text-muted">
-                        
+
                     </div>
                 </div>
 

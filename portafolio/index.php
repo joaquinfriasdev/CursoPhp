@@ -8,6 +8,5 @@
             <hr class="my-2">
             <p>Más información</p>
         </div>
-
     </div>
 <?php include("pie.php"); ?>
