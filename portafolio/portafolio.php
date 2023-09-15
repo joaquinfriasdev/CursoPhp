@@ -2,15 +2,39 @@
 <?php include("conexion.php"); ?>
 <?php
 if ($_POST) {
-    print_r($_POST);
     $nombre = $_POST["nombre"];
+    $descripcion = $_POST["descripcion"];
+
+    $fecha = new DateTime();
+
+    $imagen = $fecha->getTimestamp() . "_" . $_FILES['archivo']['name'];
+
+    $imagen_temporal = $_FILES['archivo']['tmp_name'];
+
+    move_uploaded_file($imagen_temporal, "imagenes/" . $imagen);
+
     $objConexion = new conexion();
-    $sql = "INSERT INTO `proyectos` (`id`, `nombre`, `imagen`, `descripcion`) VALUES (NULL, '$nombre', 'imagen.jpg', 'Es un proyecto de hace mucho tiempo');";
+    $sql = "INSERT INTO `proyectos` (`id`, `nombre`, `imagen`, `descripcion`) VALUES (NULL, '$nombre', '$imagen', '$descripcion');";
     $objConexion->ejecutar($sql);
+    header("Location:portafolio.php");
+}
+if ($_GET) {
+
+    //"DELETE FROM proyectos WHERE `proyectos`.`id` = 5"
+
+    $id = $_GET['borrar'];
+    $objConexion = new conexion();
+
+    $imagen = $objConexion->consultar("SELECT imagen FROM `proyectos` WHERE id=" . $id);
+
+    unlink("imagenes/" . $imagen[0]['imagen']);
+    $sql = "DELETE FROM proyectos WHERE `proyectos`.`id` =" . $id;
+    $objConexion->ejecutar($sql);
+    header("Location:portafolio.php");
 }
 
-$objConexion= new conexion();
-$proyectos=$objConexion->consultar("SELECT * FROM `proyectos`");
+$objConexion = new conexion();
+$proyectos = $objConexion->consultar("SELECT * FROM `proyectos`");
 
 //print_r($proyectos);
 
@@ -26,9 +50,12 @@ $proyectos=$objConexion->consultar("SELECT * FROM `proyectos`");
                 </div>
                 <div class="card-body">
                     <form action="portafolio.php" method="post" enctype="multipart/form-data">
-                        Nombre del Proyecto: <input class="form-control" type="text" name="nombre" id="">
+                        Nombre del Proyecto: <input required class="form-control" type="text" name="nombre" id="">
                         <br>
-                        Imagen del Proyecto: <input class="form-control" type="file" name="archivo" id="">
+                        Imagen del Proyecto: <input required class="form-control" type="file" name="archivo" id="">
+                        <br>
+                        Descripción:
+                        <textarea required class="form-control" name="descripcion" id="" rows="3"></textarea>
                         <br>
                         <input class="btn btn-success" type="submit" value="Envíar proyecto">
                     </form>
@@ -48,15 +75,19 @@ $proyectos=$objConexion->consultar("SELECT * FROM `proyectos`");
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach($proyectos as $proyecto){?>
-                        <tr class="">
-                            <td><?php echo $proyecto['id'];?></td>
-                            <td><?php echo $proyecto['nombre'];?></td>
-                            <td><?php echo $proyecto['imagen'];?></td>
-                            <td><?php echo $proyecto['descripcion'];?></td>
-                            <td><a class="btn btn-danger" href="#">Eliminar</a></td>
-                        </tr>
-                        <?php }?>
+                        <?php foreach ($proyectos as $proyecto) { ?>
+                            <tr class="">
+                                <td><?php echo $proyecto['id']; ?></td>
+                                <td><?php echo $proyecto['nombre']; ?></td>
+                                <td>
+                                    <img width="100" src="imagenes/<?php echo $proyecto['imagen']; ?>" alt="">
+                                
+                                    
+                                    </td>
+                                <td><?php echo $proyecto['descripcion']; ?></td>
+                                <td><a class="btn btn-danger" href="?borrar=<?php echo $proyecto['id']; ?>">Eliminar</a></td>
+                            </tr>
+                        <?php } ?>
                     </tbody>
                 </table>
             </div>
